@@ -1,14 +1,15 @@
-project.name = mysql57
-project.version = 5.7.18
-project.vendor = mysql.com
-project.homepage = https://www.mysql.com
-project.groups = dev/db
-project.description = The world's most popular open source database
+[project]
+name = mysql57
+version = 5.7.18
+vendor = mysql.com
+homepage = https://www.mysql.com
+groups = dev/db
+description = The world's most popular open source database
 
 %build
 PREFIX="{{.project__prefix}}"
 
-cd {{.lospack__pack_dir}}/deps
+cd {{.inpack__pack_dir}}/deps
 
 if [ ! -f "mysql-5.7.18.tar.gz" ]; then
     wget https://github.com/mysql/mysql-server/archive/mysql-5.7.18.tar.gz
@@ -52,10 +53,10 @@ cmake . -DWITH_BOOST=../boost_1_59_0 \
   -DDEFAULT_COLLATION=utf8_general_ci \
   -DMYSQL_USER=action
 
-make mysql -j2
-make mysqld -j2
-make mysqladmin -j2
-make connection_control -j2
+make mysql -j4
+make mysqld -j4
+make mysqladmin -j4
+make connection_control -j4
 
 
 strip -s sql/mysqld
@@ -71,5 +72,10 @@ strip -s plugin/connection_control/connection_control.so
 install plugin/connection_control/connection_control.so {{.buildroot}}/lib64/mysql/plugin/
 
 rsync -av sql/share/* {{.buildroot}}/share/
+
+cd {{.inpack__pack_dir}}/deps
+rm -rf boost_1_59_0
+rm -rf mysql-server-mysql-5.7.18
+
 
 %files
