@@ -1,6 +1,6 @@
 [project]
 name = mysql57
-version = 5.7.18
+version = 5.7.20
 vendor = mysql.com
 homepage = https://www.mysql.com
 groups = dev/db
@@ -11,11 +11,11 @@ PREFIX="{{.project__prefix}}"
 
 cd {{.inpack__pack_dir}}/deps
 
-if [ ! -f "mysql-5.7.18.tar.gz" ]; then
-    wget https://github.com/mysql/mysql-server/archive/mysql-5.7.18.tar.gz
+if [ ! -f "mysql-{{.project__version}}.tar.gz" ]; then
+    wget https://github.com/mysql/mysql-server/archive/mysql-{{.project__version}}.tar.gz
 fi
-if [ ! -d "mysql-server-mysql-5.7.18" ]; then
-    tar -zxf mysql-5.7.18.tar.gz
+if [ ! -d "mysql-{{.project__version}}" ]; then
+    tar -zxf mysql-{{.project__version}}.tar.gz
 fi
 
 
@@ -31,7 +31,7 @@ mkdir -p {{.buildroot}}/{bin,etc/my.cnf.d,data,lib64/mysql/plugin,files,run,log}
 install ../misc/etc/my.cnf.default {{.buildroot}}/etc/my.cnf.default
 install ../misc/etc/my.server.cnf.default {{.buildroot}}/etc/my.server.cnf.default
 
-cd mysql-server-mysql-5.7.18
+cd mysql-{{.project__version}}
 cmake . -DWITH_BOOST=../boost_1_59_0 \
   -DCMAKE_INSTALL_PREFIX=$PREFIX \
   -DINSTALL_SBINDIR=bin \
@@ -75,7 +75,7 @@ rsync -av sql/share/* {{.buildroot}}/share/
 
 cd {{.inpack__pack_dir}}/deps
 rm -rf boost_1_59_0
-rm -rf mysql-server-mysql-5.7.18
+rm -rf mysql-{{.project__version}}
 
 
 %files
