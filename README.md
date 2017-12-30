@@ -1,7 +1,7 @@
-## lospack for MySQL
+## inPack for MySQL
 
 ``` shell
-go install code.hooto.com/lessos/lospack/cmd/lospack
+go install github.com/sysinner/inpack/cmd/inpack
 
-lospack build -version 5.7.18 -release 1
+inpack build -version 5.7.20 -release 1
 ```
