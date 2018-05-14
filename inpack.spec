@@ -1,6 +1,6 @@
 [project]
 name = mysql57
-version = 5.7.20
+version = 5.7.22
 vendor = mysql.com
 homepage = https://www.mysql.com
 groups = dev/db
