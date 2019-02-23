@@ -1,13 +1,13 @@
 [project]
 name = mysql57
-version = 5.7.22
+version = 5.7.25
 vendor = mysql.com
 homepage = https://www.mysql.com
 groups = dev/db
 description = The world's most popular open source database
 
 %build
-PREFIX="{{.project__prefix}}"
+PREFIX="opt/mysql/mysql57"
 
 cd {{.inpack__pack_dir}}/deps
 
@@ -26,10 +26,13 @@ if [ ! -d "boost_1_59_0" ]; then
     tar -jxf boost_1_59_0.tar.bz2
 fi
 
-mkdir -p {{.buildroot}}/{bin,etc/my.cnf.d,data,lib64/mysql/plugin,files,run,log}
-
-install ../misc/etc/my.cnf.default {{.buildroot}}/etc/my.cnf.default
-install ../misc/etc/my.server.cnf.default {{.buildroot}}/etc/my.server.cnf.default
+mkdir -p {{.buildroot}}/bin
+mkdir -p {{.buildroot}}/etc/my.cnf.d
+mkdir -p {{.buildroot}}/data
+mkdir -p {{.buildroot}}/lib64/mysql/plugin
+mkdir -p {{.buildroot}}/files
+mkdir -p {{.buildroot}}/run
+mkdir -p {{.buildroot}}/log
 
 cd mysql-{{.project__version}}
 cmake . -DWITH_BOOST=../boost_1_59_0 \
@@ -56,6 +59,7 @@ cmake . -DWITH_BOOST=../boost_1_59_0 \
 make mysql -j4
 make mysqld -j4
 make mysqladmin -j4
+make mysqldump -j4
 make connection_control -j4
 
 
@@ -68,10 +72,17 @@ install client/mysql {{.buildroot}}/bin/mysql57
 strip -s client/mysqladmin
 install client/mysqladmin {{.buildroot}}/bin/mysql57admin
 
+strip -s client/mysqldump
+install client/mysqldump {{.buildroot}}/bin/mysql57dump
+
 strip -s plugin/connection_control/connection_control.so
 install plugin/connection_control/connection_control.so {{.buildroot}}/lib64/mysql/plugin/
 
 rsync -av sql/share/* {{.buildroot}}/share/
+
+cd {{.inpack__pack_dir}}
+install -m 0644 misc/etc/my.cnf.default {{.buildroot}}/etc/my.cnf.default
+install -m 0644 misc/etc/my.server.cnf.default {{.buildroot}}/etc/my.server.cnf.default
 
 cd {{.inpack__pack_dir}}/deps
 rm -rf boost_1_59_0
