@@ -7,7 +7,7 @@ groups = dev/db
 description = The world's most popular open source database
 
 %build
-PREFIX="opt/mysql/mysql57"
+PREFIX="/opt/mysql/mysql57"
 
 cd {{.inpack__pack_dir}}/deps
 
@@ -30,12 +30,13 @@ mkdir -p {{.buildroot}}/bin
 mkdir -p {{.buildroot}}/etc/my.cnf.d
 mkdir -p {{.buildroot}}/data
 mkdir -p {{.buildroot}}/lib64/mysql/plugin
+mkdir -p {{.buildroot}}/lib/plugin
 mkdir -p {{.buildroot}}/files
 mkdir -p {{.buildroot}}/run
 mkdir -p {{.buildroot}}/log
 
 cd mysql-{{.project__version}}
-cmake . -DWITH_BOOST=../boost_1_59_0 \
+cmake3 . -DWITH_BOOST=../boost_1_59_0 \
   -DCMAKE_INSTALL_PREFIX=$PREFIX \
   -DINSTALL_SBINDIR=bin \
   -DMYSQL_DATADIR=$PREFIX/data \
@@ -61,7 +62,12 @@ make mysqld -j4
 make mysqladmin -j4
 make mysqldump -j4
 make connection_control -j4
+make mysql_ssl_rsa_setup -j4
 
+cd rapid/plugin/group_replication/
+make -j4
+
+cd {{.inpack__pack_dir}}/deps/mysql-{{.project__version}}
 
 strip -s sql/mysqld
 install sql/mysqld {{.buildroot}}/bin/mysql57d
@@ -75,8 +81,14 @@ install client/mysqladmin {{.buildroot}}/bin/mysql57admin
 strip -s client/mysqldump
 install client/mysqldump {{.buildroot}}/bin/mysql57dump
 
+strip -s client/mysql_ssl_rsa_setup
+install client/mysql_ssl_rsa_setup {{.buildroot}}/bin/mysql_ssl_rsa_setup
+
 strip -s plugin/connection_control/connection_control.so
 install plugin/connection_control/connection_control.so {{.buildroot}}/lib64/mysql/plugin/
+
+strip -s rapid/plugin/group_replication/group_replication.so
+install rapid/plugin/group_replication/group_replication.so {{.buildroot}}/lib/plugin/
 
 rsync -av sql/share/* {{.buildroot}}/share/
 
