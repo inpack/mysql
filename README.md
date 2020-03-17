@@ -1,7 +1,7 @@
 ## inPack for MySQL
 
 ``` shell
-yum install -y gzip-devel
+yum install -y gzip-devel bison libtirpc
 
 go install github.com/sysinner/inpack/cmd/inpack
 
